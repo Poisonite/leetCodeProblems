@@ -62,16 +62,16 @@
 //   return `/${final}`;
 // };
 
-var path = require('path');
-const simplifyPath = (input) => {
-  let resolvedPath = path.resolve(input);
-  let resPathArr = resolvedPath.split('\\');
-  resPathArr.splice(0, 1);
-  final = resPathArr.join('/');
-  return `/${final}`;
-};
+// var path = require('path');
+// const simplifyPath = (input) => {
+//   let resolvedPath = path.resolve(input);
+//   let resPathArr = resolvedPath.split('\\');
+//   resPathArr.splice(0, 1);
+//   final = resPathArr.join('/');
+//   return `/${final}`;
+// };
 
-console.log(simplifyPath('/home/'));
+// console.log(simplifyPath('/home/'));
 
 // let resolvedPath = path.resolve('/home/');
 // let resPathArr = resolvedPath.split('\\');
@@ -80,3 +80,71 @@ console.log(simplifyPath('/home/'));
 // final = `/${final}`;
 
 // console.log(final);
+
+// Take 2
+const simplifyPath = (input) => {
+  let inputArr = input.split('/');
+
+  // Add starting slash
+  if (inputArr[0] !== '') {
+    inputArr.unshift('');
+  }
+  // Remove trailing slash
+  if (inputArr[inputArr.length - 1] === '') {
+    inputArr.splice(inputArr.length - 1, 1);
+  }
+  // Remove duplicate slashes
+  inputArr.forEach((char, i) => {
+    if (char === '') {
+      if (i === 0) {
+        return;
+      }
+      if (i === inputArr.length - 1) {
+        return;
+      }
+      inputArr[i] = '^';
+      return;
+    }
+    return;
+  });
+
+  // Remove paths that have been backed out of
+  inputArr.forEach((char, i) => {
+    if (char === '..') {
+      inputArr[i] = '^';
+      if (inputArr[i + 1] === '..') {
+        if (inputArr[i - 1] === '.') {
+          inputArr[i - 1] = '^';
+          inputArr[i - 2] = '^';
+        } else {
+          inputArr[i - 1] = '^';
+        }
+
+        if (inputArr[i - 2] === '.') {
+          inputArr[i - 2] = '^';
+          inputArr[i - 3] = '^';
+        } else {
+          inputArr[i - 2] = '^';
+        }
+        return;
+      }
+      inputArr[i - 1] = '^';
+    }
+  });
+
+  // Delete removed paths
+  let newArr = [];
+  inputArr.forEach((char) => {
+    if (char !== '^') {
+      newArr.push(char);
+    }
+  });
+
+  // return final result
+  if (newArr.join('/') === '') {
+    return '/';
+  }
+  return newArr.join('/');
+};
+// simplifyPath('/a/./b/../../c/');
+console.log(simplifyPath('/a/../../b/../c//.//')); // Result: /c
