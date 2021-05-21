@@ -48,4 +48,4 @@ let sortColors = (nums) => {
   return nums;
 };
 
-console.log(sortV3([2, 0, 2, 1, 1, 0]));
+console.log(sortColors([2, 0, 2, 1, 1, 0]));
